@@ -73,7 +73,7 @@ El foco está en:
 - Eliminación o tratamiento de duplicados.
 - Normalización de categorías y fechas.
 - Justificación de cada decisión.
-
+º 
 ### 3.4 Visualizaciones básicas
 Debe incluir, como mínimo:
 - Un histograma.

@@ -22,8 +22,21 @@ sobre un dataset de videojuegos.
 1. Clona el repositorio o descarga los archivos.
 2. (Opcional) Crea un entorno virtual e instala dependencias:
 ```bash
+# Create a virtual environment
+# If `python` is on PATH (Unix or Windows with python on PATH):
 python -m venv venv
-source venv/bin/activate  # o venv\Scripts\activate en Windows
+
+# On Windows, if the `python` command is not found, use the Python launcher:
+py -3 -m venv venv
+
+# Activate the virtual environment
+# macOS / Linux:
+source venv/bin/activate
+# Windows PowerShell:
+.\venv\Scripts\Activate.ps1
+# Windows (cmd.exe):
+venv\Scripts\activate
+
 pip install -r requirements.txt
 ```
 3. Abre el notebook:
@@ -40,4 +53,3 @@ El notebook realiza:
 - Conclusiones exploratorias al final.
 
 ---
-Generado automáticamente por ChatGPT.
