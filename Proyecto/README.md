@@ -21,8 +21,8 @@ El propósito del análisis es:
 - Crear visualizaciones fundamentales:
   - Histograma
   - Gráfico de barras
-  - Visualización adicional (boxplot o línea temporal)
-- Extraer conclusiones exploratorias claras.
+  - Visualización adicional
+- Extraer conclusiones.
 
 ```
 
