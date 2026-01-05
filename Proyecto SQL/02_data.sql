@@ -1,7 +1,6 @@
 -- =====================================================
 -- 02_data.sql
 -- Carga de datos + limpieza + correcciones
--- Motor: SQLite
 -- =====================================================
 
 PRAGMA foreign_keys = ON;
