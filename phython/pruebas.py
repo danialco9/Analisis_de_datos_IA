@@ -1,15 +1,9 @@
-def presentarse (nombre, edad, ciudad, **hobbies):
-
-    string_ = "Me gusta de"
-
-    for key, value in hobbies.items():
-        string_ += key
-        string_ += ":" + value + ", "
-
-    return f"Hola soy {nombre}, tengo {edad} años y vivo en {ciudad} y mis hobbies son: {string_}"
+import pandas as pd
 
 
-hobbies_alvaro = {"deporte": "padel", "viajar": "playa"}
+df = pd.DataFrame([{"val1": "Alvaro Gonzalez Garcia"}, {"val1": "Laura  Gonzalez Garcia"}, {"val1": "Oscar Martinez Garcia"}])
 
+df["Nombre"], df["Apellido 1"] , df["Apellido2"] =df["val1"].apply(lambda x: x.split())
 
-presentarse ("Alvaro", 30, "Madrid", **hobbies_alvaro)
+ej = "Alvaro Gonzalez Garcia"
+ej.split()
