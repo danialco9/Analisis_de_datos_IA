@@ -1,14 +1,12 @@
--- =====================================================
+
 -- 01_schema.sql 
 -- Proyecto SQL: Plataforma de hábitos saludables
--- =====================================================
 
 -- Activar claves foráneas en SQLite
 PRAGMA foreign_keys = ON;
 
 -- =========================
--- ELIMINAR TABLAS
--- =========================
+-- Eliminación de tablas si existen
 
 DROP TABLE IF EXISTS fact_habitos_diarios;
 DROP TABLE IF EXISTS dim_usuario;
@@ -17,8 +15,7 @@ DROP TABLE IF EXISTS dim_calendario;
 DROP TABLE IF EXISTS dim_nivel_entrenamiento;
 
 -- =========================
--- TABLAS DE DIMENSIONES
--- =========================
+-- Tabla de usuarios
 
 -- Tabla Usuario
 -- Representa a cada joven deportista
@@ -59,7 +56,7 @@ CREATE TABLE IF NOT EXISTS dim_nivel_entrenamiento (
 
 -- =========================
 -- TABLA DE HECHOS
--- =========================
+
 
 -- Tabla central con métricas diarias
 -- Guarda los hábitos de un usuario en un día concreto
@@ -82,7 +79,7 @@ CREATE TABLE IF NOT EXISTS fact_habitos_diarios (
 
 -- =========================
 -- ÍNDICES
--- =========================
+
 
 -- Índice para acelerar búsquedas por usuario y fecha
 CREATE INDEX IF NOT EXISTS idx_fact_user_date
@@ -90,7 +87,7 @@ ON fact_habitos_diarios (user_id, date_id);
 
 -- =========================
 -- VISTA
--- =========================
+
 
 -- Vista resumen mensual por deporte
 -- Permite ver promedios de sueño y entrenamiento por mes y deporte

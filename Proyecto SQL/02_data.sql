@@ -1,18 +1,14 @@
--- =====================================================
+
 -- 02_data.sql
 -- Carga de datos + limpieza + correcciones
--- =====================================================
 
 PRAGMA foreign_keys = ON;
 
--- =========================
--- INICIO TRANSACCIÓN
--- =========================
 BEGIN TRANSACTION;
 
 -- -------------------------
 -- USUARIOS
--- -------------------------
+
 INSERT INTO dim_usuario (user_id, edad, peso_kg, altura_cm, nivel, fecha_registro) VALUES
 (1, 20, 51.0, 168, 'amateur', '2025-01-01'),
 (2, 22, 68.5, 175, 'intermedio', '2025-01-01'),
@@ -23,7 +19,7 @@ INSERT INTO dim_usuario (user_id, edad, peso_kg, altura_cm, nivel, fecha_registr
 
 -- -------------------------
 -- DEPORTES
--- -------------------------
+
 INSERT INTO dim_deporte (sport_id, nombre_deporte, categoria) VALUES
 (1, 'Vóley', 'equipo'),
 (2, 'Gimnasio', 'individual'),
@@ -32,15 +28,15 @@ INSERT INTO dim_deporte (sport_id, nombre_deporte, categoria) VALUES
 
 -- -------------------------
 -- NIVELES DE ENTRENAMIENTO
--- -------------------------
+
 INSERT INTO dim_nivel_entrenamiento (level_id, descripcion) VALUES
 (1, 'baja'),
 (2, 'media'),
 (3, 'alta');
 
 -- -------------------------
--- CALENDARIO (1 semana)
--- -------------------------
+-- CALENDARIO 1 semana
+
 INSERT INTO dim_calendario (date_id, fecha, dia, mes, anio, dia_semana) VALUES
 (1, '2025-01-01', 1, 1, 2025, 'Miércoles'),
 (2, '2025-01-02', 2, 1, 2025, 'Jueves'),
@@ -51,8 +47,8 @@ INSERT INTO dim_calendario (date_id, fecha, dia, mes, anio, dia_semana) VALUES
 (7, '2025-01-07', 7, 1, 2025, 'Martes');
 
 -- -------------------------
--- HÁBITOS DIARIOS (FACT)
--- -------------------------
+-- HÁBITOS DIARIOS 
+
 -- Usuario 1
 INSERT INTO fact_habitos_diarios (habit_id, user_id, date_id, sport_id, level_id, training_minutes, sleep_hours, meals_count) VALUES
 (1, 1, 1, 1, 2, 90, 7.5, 4),
@@ -91,9 +87,9 @@ INSERT INTO fact_habitos_diarios VALUES
 (19, 6, 3, 2, 3, 115, 5.5, 2),
 (20, 6, 7, 4, 2, 90, 7.0, 4);
 
--- =========================
--- UPDATE CON SENTIDO
--- =========================
+
+-- UPDATES
+
 -- Usuario 3 reportó mal las horas de sueño
 UPDATE fact_habitos_diarios
 SET sleep_hours = 6.0
@@ -104,15 +100,13 @@ UPDATE fact_habitos_diarios
 SET meals_count = 3
 WHERE level_id = 3 AND meals_count < 3;
 
--- =========================
--- DELETE CON SENTIDO
--- =========================
+
+-- DELETES
+
 -- Eliminar registros inconsistentes (entrenamiento 0 y nivel alto)
 DELETE FROM fact_habitos_diarios
 WHERE training_minutes = 0 AND level_id = 3;
 
--- =========================
--- FIN TRANSACCIÓN
--- =========================
+
 COMMIT;
 
