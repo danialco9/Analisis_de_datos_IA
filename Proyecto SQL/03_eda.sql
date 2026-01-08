@@ -1,93 +1,95 @@
 PRAGMA foreign_keys = ON;
--- =====================================================
--- 1. ¿Qué deporte tiene peor descanso promedio?
--- =====================================================
-SELECT d.nombre_deporte,
-       ROUND(AVG(f.sleep_hours),2) AS avg_sueno
+
+-- Deportes con peor descanso promedio
+SELECT
+    d.nombre_deporte,
+    ROUND(AVG(f.sleep_hours), 2) AS avg_sueno,
+    COUNT(*) AS registros
 FROM fact_habitos_diarios f
-JOIN dim_deporte d ON f.sport_id = d.sport_id
+INNER JOIN dim_deporte d
+        ON f.sport_id = d.sport_id
 GROUP BY d.nombre_deporte
 ORDER BY avg_sueno ASC;
 
--- Permite detectar deportes asociados a peor descanso.
+--Esto permite vender planes específicos de recuperación o asesoramiento personalizado por deporte
 
--- =====================================================
--- 2. Relación entre nivel de entrenamiento y descanso
--- =====================================================
-SELECT n.descripcion AS nivel_entrenamiento,
-       ROUND(AVG(f.sleep_hours),2) AS avg_sueno,
-       ROUND(AVG(f.training_minutes),1) AS avg_minutos
+-- ==================================================
+
+-- Comparación de niveles de intensidad en los entrenamientos y su impacto en el sueño y minutos de entrenamiento
+SELECT
+    n.descripcion AS nivel_entrenamiento,
+    ROUND(AVG(f.training_minutes), 1) AS avg_minutos,
+    ROUND(AVG(f.sleep_hours), 2) AS avg_sueno,
+    CASE
+        WHEN AVG(f.sleep_hours) < 6.5 THEN 'DESCANSO DEFICIENTE'
+        ELSE 'DESCANSO ADECUADO'
+    END AS calidad_descanso
 FROM fact_habitos_diarios f
-JOIN dim_nivel_entrenamiento n ON f.level_id = n.level_id
+INNER JOIN dim_nivel_entrenamiento n
+        ON f.level_id = n.level_id
 GROUP BY n.descripcion;
+-- Sirve para cómo la intensidad afecta al descanso, lo que puede guiar recomendaciones de entrenamiento personalizadas.
+-- Esto seria la base para ofrecer planes de entrenamiento adaptativos según el nivel de intensidad y su impacto en el sueño.
 
--- A mayor carga, menor descanso promedio.
+-- ==================================================
 
--- =====================================================
--- 3. Clasificación de riesgo por día
--- =====================================================
-SELECT habit_id,
-       user_id,
-       training_minutes,
-       sleep_hours,
-       CASE
-           WHEN training_minutes > 100 AND sleep_hours < 6
-                THEN 'RIESGO ALTO'
-           WHEN training_minutes > 80 AND sleep_hours < 7
-                THEN 'RIESGO MEDIO'
-           ELSE 'RIESGO BAJO'
-       END AS nivel_riesgo
-FROM fact_habitos_diarios;
-
-------------------------------------------------------
-
--- =====================================================
--- 4. Usuarios con sobreentrenamiento recurrente (CTE)
--- =====================================================
-WITH dias_riesgo AS (
-    SELECT user_id,
-           COUNT(*) AS dias_peligro
+-- Usuarios en riesgo por sobreentrenamiento y falta de sueño
+WITH resumen_usuario AS (
+    SELECT
+        user_id,
+        AVG(training_minutes) AS avg_minutos,
+        AVG(sleep_hours) AS avg_sueno
     FROM fact_habitos_diarios
-    WHERE training_minutes > 100
-      AND sleep_hours < 6.5
     GROUP BY user_id
+),
+usuarios_riesgo AS (
+    SELECT
+        user_id,
+        avg_minutos,
+        avg_sueno,
+        CASE
+            WHEN avg_minutos > 100 AND avg_sueno < 6.5
+                 THEN 'USUARIO RIESGO'
+            ELSE 'USUARIO NORMAL'
+        END AS clasificacion
+    FROM resumen_usuario
 )
 SELECT *
-FROM dias_riesgo
-WHERE dias_peligro >= 2;
+FROM usuarios_riesgo
+WHERE clasificacion = 'USUARIO RIESGO';
+-- Identificar usuarios en riesgo para ofrecerles asesoramiento personalizado o planes de recuperación, lo que puede ser un servicio premium.
+-- ==================================================
 
--- Usuarios que podrían necesitar descanso o ajuste de carga.
-
-
--- =====================================================
--- 5. Ranking de usuarios por carga total
--- =====================================================
-SELECT user_id,
-       SUM(training_minutes) AS total_minutos,
-       RANK() OVER (ORDER BY SUM(training_minutes) DESC) AS ranking_carga
-FROM fact_habitos_diarios
-GROUP BY user_id;
-
-
--- =====================================================
--- 6. Diferencia entre semana y fin de semana
--- =====================================================
+-- Análisis de variación diaria en hábitos de entrenamiento y sueño
 SELECT
-    CASE
-        WHEN c.dia_semana IN ('Sábado', 'Domingo')
-             THEN 'Fin de semana'
-        ELSE 'Entre semana'
-    END AS tipo_dia,
-    ROUND(AVG(f.training_minutes),1) AS avg_entrenamiento,
-    ROUND(AVG(f.sleep_hours),2) AS avg_sueno
-FROM fact_habitos_diarios f
-JOIN dim_calendario c ON f.date_id = c.date_id
-GROUP BY tipo_dia;
+    user_id,
+    training_minutes,
+    ROUND(
+        AVG(training_minutes) OVER (PARTITION BY user_id),
+        1
+    ) AS avg_entrenamiento_usuario
+FROM fact_habitos_diarios
+ORDER BY user_id;
+-- Sirve para idemtificar los usuarios con alta variabilidad en sus hábitos para ofrecerles planes de entrenamiento más estructurados y consistentes.
+-- Tambien sirve para mostrar métricas avanzadas en dashboards premium, comparando cada día con la media del usuario.
 
--- Cambios de hábitos según el tipo de día.
 
--- =====================================================
--- 7. Uso de la vista resumen
--- =====================================================
+-- ==================================================
+
+-- Usuarios con menos días registrados y su perfil
+SELECT
+    u.user_id,
+    u.edad,
+    COUNT(f.habit_id) AS dias_registrados
+FROM dim_usuario u
+LEFT JOIN fact_habitos_diarios f
+       ON u.user_id = f.user_id
+GROUP BY u.user_id, u.edad
+ORDER BY dias_registrados ASC;
+-- Detectar usuarios inactivos para campañas de reactivación de motivación personalizadas.
+
+-- ==================================================
+
+-- Vista resumen mensual por deporte
 SELECT *
 FROM vw_resumen_mensual_deporte;
