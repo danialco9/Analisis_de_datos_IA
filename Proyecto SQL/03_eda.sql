@@ -70,7 +70,7 @@ SELECT
     ) AS avg_entrenamiento_usuario
 FROM fact_habitos_diarios
 ORDER BY user_id;
--- Sirve para idemtificar los usuarios con alta variabilidad en sus hábitos para ofrecerles planes de entrenamiento más estructurados y consistentes.
+-- Sirve para identificar los usuarios con alta variabilidad en sus hábitos para ofrecerles planes de entrenamiento más estructurados y consistentes.
 -- Tambien sirve para mostrar métricas avanzadas en dashboards premium, comparando cada día con la media del usuario.
 
 
@@ -90,6 +90,34 @@ ORDER BY dias_registrados ASC;
 
 -- ==================================================
 
+
+-- Ganancias que genera el gimnasio cada mes segun sus suscripciones
+SELECT
+    c.mes,
+    c.anio,
+    SUM(s.precio_mensual) AS ingresos_estimados
+FROM fact_suscripciones fs
+JOIN dim_suscripcion s ON fs.subscription_id = s.subscription_id
+JOIN dim_calendario c
+     ON c.fecha BETWEEN fs.fecha_inicio AND IFNULL(fs.fecha_fin, CURRENT_DATE)
+WHERE fs.activa = 1
+GROUP BY c.mes, c.anio
+ORDER BY c.anio, c.mes;
+
+-- ==================================================
+
+-- Distribución de clientes por tipo de suscripción
+SELECT
+    s.tipo,
+    COUNT(fs.user_id) AS total_usuarios
+FROM dim_suscripcion s
+JOIN fact_suscripciones fs ON s.subscription_id = fs.subscription_id
+WHERE fs.activa = 1
+GROUP BY s.tipo;
+
+
+
 -- Vista resumen mensual por deporte
 SELECT *
 FROM vw_resumen_mensual_deporte;
+-- Sirve para identificar tendencias de ingresos y ajustar estrategias de marketing o promociones según el tipo de suscripción más popular.

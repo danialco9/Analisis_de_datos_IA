@@ -88,6 +88,22 @@ INSERT INTO fact_habitos_diarios VALUES
 (20, 6, 7, 4, 2, 90, 7.0, 4);
 
 
+INSERT INTO dim_suscripcion (subscription_id, tipo, precio_mensual) VALUES
+(1, 'basica', 25.00),
+(2, 'premium', 40.00),
+(3, 'vip', 60.00);
+
+
+INSERT INTO fact_suscripciones
+(subscription_fact_id, user_id, subscription_id, fecha_inicio, fecha_fin, activa)
+VALUES
+(1, 1, 2, '2025-01-01', NULL, 1),
+(2, 2, 3, '2025-01-01', NULL, 1),
+(3, 3, 1, '2025-01-02', NULL, 1),
+(4, 4, 2, '2025-01-02', NULL, 1),
+(5, 5, 1, '2025-01-03', NULL, 1),
+(6, 6, 2, '2025-01-03', NULL, 1);
+
 -- UPDATES
 
 -- Usuario 3 reportó mal las horas de sueño
@@ -109,4 +125,3 @@ WHERE training_minutes = 0 AND level_id = 3;
 
 
 COMMIT;
-

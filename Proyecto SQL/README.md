@@ -1,10 +1,10 @@
-El proyecto consiste en diseñar una base de datos relacional para una plataforma de hábitos saludables dirigida a jóvenes deportistas.
+# Proyecto SQL – Plataforma de Hábitos Saludables para Jóvenes Deportistas
 
-Se busca:
+## 1. Descripción del proyecto
 
-Registrar usuarios, deportes, niveles de entrenamiento y hábitos diarios.
+Este proyecto consiste en el diseño, implementación y análisis de una base de datos relacional
+orientada a mejorar los hábitos saludablesde jóvenes deportistas
 
-Analizar patrones de sueño, alimentación y entrenamiento.
-
-Generar insights que permitan mejorar hábitos saludables y prevenir sobrecarga o lesiones.
-
+Muchos deportistas jóvenes entrenan sin una planificación adecuada del descanso y la nutrición,
+lo que puede provocar bajo rendimiento, lesiones y abandono del deporte
+La plataforma buscar y detectar estos problemas mediante el análisis de datos y generar recomendaciones personalizadas
