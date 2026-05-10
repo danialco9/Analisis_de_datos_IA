@@ -135,7 +135,6 @@ en cocina internacional, técnicas culinarias, ingredientes, maridajes y cultura
 langchain>=0.3
 langchain-google-genai>=2.0
 langchain-chroma>=0.1
-langchain-ollama>=0.2          # solo si se usa el LLM alternativo local
 langgraph>=0.2
 chromadb>=0.5
 ipywidgets>=8.0
