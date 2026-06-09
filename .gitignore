@@ -1,1 +1,17 @@
 Proyecto_Deep Learning/trustpilot-reviews-123k.csv
+
+# Codex / archivos locales
+**/.codex-run/
+**/AGENTS.md
+
+# Python cache
+**/__pycache__/
+*.pyc
+
+# Registros personales generados por la app
+proyecto final/data/processed/seguimiento_atleta.csv
+
+# Entregables temporales y archivos locales accidentales
+proyecto final/docs/*.backup.docx
+proyecto final/*.exe
+proyecto final/*.winmd
