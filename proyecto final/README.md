@@ -82,6 +82,7 @@ La app muestra:
 - Alertas automaticas.
 - Lectura medico-deportiva del ultimo registro.
 - Tabla diaria con posibles lesiones y efectos negativos.
+- Descarga de informe Excel con resumen, historial, recomendaciones y graficas.
 
 Incluye botones para cargar una semana saludable o una semana de sobrecarga, pensados para facilitar la presentacion en defensa.
 

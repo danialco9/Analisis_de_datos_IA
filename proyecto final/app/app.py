@@ -4,7 +4,10 @@ import numpy as np
 import joblib
 import plotly.graph_objects as go
 import os
+from io import BytesIO
 from datetime import date, timedelta
+from openpyxl.chart import BarChart, LineChart, Reference
+from openpyxl.styles import Alignment, Font, PatternFill
 
 # ── Configuración de página ─────────────────────────────────
 st.set_page_config(
@@ -434,6 +437,116 @@ def valorar_seguimiento(df_seguimiento):
 
     return titulo, mensaje, tendencia_txt, media_score, dias_altos, media_sueno, media_fatiga
 
+def generar_excel_seguimiento(df_historial, df_periodo, periodo, resumen):
+    """Crea un Excel con historial, recomendaciones y graficas para descargar."""
+    salida = BytesIO()
+    historial = df_historial.sort_values("Fecha").copy()
+    periodo_df = df_periodo.sort_values("Fecha").copy()
+
+    for df in (historial, periodo_df):
+        if "Fecha" in df.columns:
+            df["Fecha"] = pd.to_datetime(df["Fecha"])
+
+    titulo, mensaje, tendencia_txt, media_score, dias_altos, media_sueno, media_fatiga = resumen
+    alertas = generar_alertas_periodo(periodo_df)
+
+    resumen_df = pd.DataFrame([
+        ["Periodo exportado", periodo],
+        ["Registros del periodo", len(periodo_df)],
+        ["Registros totales", len(historial)],
+        ["Riesgo medio", round(media_score, 2)],
+        ["Dias en riesgo alto", dias_altos],
+        ["Sueno medio", round(media_sueno, 2)],
+        ["Fatiga media", round(media_fatiga, 2)],
+        ["Tendencia", tendencia_txt],
+        ["Valoracion", titulo],
+        ["Lectura", mensaje],
+        ["Alertas", " | ".join(alertas) if alertas else "Sin alertas relevantes"],
+    ], columns=["Indicador", "Valor"])
+
+    recomendaciones_filas = []
+    for _, fila in historial.iterrows():
+        fecha = fila.get("Fecha")
+        for campo in ["Recomendaciones", "Posibles lesiones", "Efectos negativos"]:
+            for item in str(fila.get(campo, "")).split(" | "):
+                item = item.strip()
+                if item:
+                    recomendaciones_filas.append({
+                        "Fecha": fecha,
+                        "Tipo": campo,
+                        "Detalle": item,
+                        "Score": fila.get("Score"),
+                        "Nivel": fila.get("Nivel"),
+                    })
+    recomendaciones_df = pd.DataFrame(recomendaciones_filas)
+
+    with pd.ExcelWriter(salida, engine="openpyxl") as writer:
+        resumen_df.to_excel(writer, index=False, sheet_name="Resumen")
+        historial.to_excel(writer, index=False, sheet_name="Historial completo")
+        periodo_df.to_excel(writer, index=False, sheet_name="Periodo seleccionado")
+        recomendaciones_df.to_excel(writer, index=False, sheet_name="Recomendaciones")
+
+        columnas_grafica = ["Fecha", "Score", "Fatiga", "Sue\u00f1o", "Hidrataci\u00f3n"]
+        chart_data = periodo_df[columnas_grafica].copy()
+        chart_data.to_excel(writer, index=False, sheet_name="Graficas", startrow=0)
+
+        wb = writer.book
+        header_fill = PatternFill("solid", fgColor="D9EAF7")
+        for ws in wb.worksheets:
+            ws.freeze_panes = "A2"
+            for cell in ws[1]:
+                cell.font = Font(bold=True)
+                cell.fill = header_fill
+                cell.alignment = Alignment(horizontal="center")
+            for column_cells in ws.columns:
+                max_len = max(len(str(cell.value)) if cell.value is not None else 0 for cell in column_cells)
+                ws.column_dimensions[column_cells[0].column_letter].width = min(max(max_len + 2, 12), 55)
+
+        ws_graficas = wb["Graficas"]
+        if len(chart_data) >= 2:
+            max_row = len(chart_data) + 1
+
+            score_chart = LineChart()
+            score_chart.title = "Evolucion del score de riesgo"
+            score_chart.y_axis.title = "Score"
+            score_chart.x_axis.title = "Fecha"
+            score_chart.add_data(Reference(ws_graficas, min_col=2, min_row=1, max_row=max_row), titles_from_data=True)
+            score_chart.set_categories(Reference(ws_graficas, min_col=1, min_row=2, max_row=max_row))
+            score_chart.height = 9
+            score_chart.width = 20
+            ws_graficas.add_chart(score_chart, "G2")
+
+            habits_chart = LineChart()
+            habits_chart.title = "Habitos registrados"
+            habits_chart.y_axis.title = "Valor"
+            habits_chart.x_axis.title = "Fecha"
+            habits_chart.add_data(Reference(ws_graficas, min_col=3, max_col=5, min_row=1, max_row=max_row), titles_from_data=True)
+            habits_chart.set_categories(Reference(ws_graficas, min_col=1, min_row=2, max_row=max_row))
+            habits_chart.height = 9
+            habits_chart.width = 20
+            ws_graficas.add_chart(habits_chart, "G20")
+
+            niveles_df = periodo_df["Nivel"].value_counts().rename_axis("Nivel").reset_index(name="Dias")
+            start_row = max_row + 3
+            for c_idx, col in enumerate(niveles_df.columns, start=1):
+                ws_graficas.cell(row=start_row, column=c_idx, value=col)
+            for r_idx, row in enumerate(niveles_df.itertuples(index=False), start=start_row + 1):
+                ws_graficas.cell(row=r_idx, column=1, value=row.Nivel)
+                ws_graficas.cell(row=r_idx, column=2, value=row.Dias)
+
+            risk_bar = BarChart()
+            risk_bar.title = "Dias por nivel de riesgo"
+            risk_bar.y_axis.title = "Dias"
+            risk_bar.x_axis.title = "Nivel"
+            risk_bar.add_data(Reference(ws_graficas, min_col=2, min_row=start_row, max_row=start_row + len(niveles_df)), titles_from_data=True)
+            risk_bar.set_categories(Reference(ws_graficas, min_col=1, min_row=start_row + 1, max_row=start_row + len(niveles_df)))
+            risk_bar.height = 8
+            risk_bar.width = 12
+            ws_graficas.add_chart(risk_bar, "G38")
+
+    salida.seek(0)
+    return salida.getvalue()
+
 # ── INTERFAZ PRINCIPAL ──────────────────────────────────────
 st.title("Sistema de Predicción de Riesgo de Lesión")
 st.caption(f"Modelo activo: **{nombre_modelo}** · Precisión: 96% · ROC-AUC: 0.999 · Variables: 23")
@@ -714,6 +827,21 @@ with tab_seguimiento:
             st.warning("No hay registros dentro del periodo seleccionado.")
         else:
             titulo, mensaje, tendencia_txt, media_score, dias_altos, media_sueno, media_fatiga = valorar_seguimiento(df_periodo)
+            resumen_exportacion = (titulo, mensaje, tendencia_txt, media_score, dias_altos, media_sueno, media_fatiga)
+
+            excel_data = generar_excel_seguimiento(
+                df_historial=df_historial,
+                df_periodo=df_periodo,
+                periodo=periodo,
+                resumen=resumen_exportacion,
+            )
+            st.download_button(
+                "Descargar informe Excel",
+                data=excel_data,
+                file_name=f"seguimiento_riesgo_lesion_{date.today().isoformat()}.xlsx",
+                mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+                use_container_width=True,
+            )
 
             col1, col2, col3, col4 = st.columns(4)
             col1.markdown(f"""<div class="metric-card"><small>Riesgo medio</small><h3>{media_score:.0f}/100</h3></div>""", unsafe_allow_html=True)

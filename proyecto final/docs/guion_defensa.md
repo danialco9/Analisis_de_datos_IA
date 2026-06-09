@@ -165,6 +165,7 @@ Explicar que la app muestra:
 - Alertas automaticas.
 - Lectura medico-deportiva del ultimo registro.
 - Tabla con posibles lesiones y efectos negativos.
+- Descarga de un informe Excel con el historial, resumen, recomendaciones y graficas.
 
 Para acelerar la defensa, usar los botones:
 

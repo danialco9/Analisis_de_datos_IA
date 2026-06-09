@@ -15,6 +15,7 @@ La validacion se centra en comprobar:
 - Visualizacion de posibles lesiones asociadas.
 - Registro diario y por rango de dias.
 - Seguimiento semanal/mensual con graficas, alertas y lectura medico-deportiva.
+- Exportacion del historial a Excel con resumen, recomendaciones y graficas.
 
 ## Entorno de prueba
 
@@ -48,6 +49,7 @@ Resultado de la prueba interna:
 - El registro diario guarda datos en CSV local.
 - El registro por rango permite guardar varios dias con la misma rutina.
 - El seguimiento filtra ultimos 7 dias, ultimos 30 dias o todo el historial.
+- La descarga Excel genera un archivo `.xlsx` con historial completo, periodo seleccionado, recomendaciones y graficas.
 
 ## Flujos validados
 
@@ -119,6 +121,7 @@ La app muestra:
 - Alertas automaticas.
 - Lectura medico-deportiva del ultimo registro.
 - Tabla diaria con score, nivel, molestias, posibles lesiones y efectos negativos.
+- Boton de descarga Excel para exportar el seguimiento completo.
 
 ## Casos de prueba
 
