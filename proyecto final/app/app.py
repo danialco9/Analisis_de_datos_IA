@@ -7,7 +7,8 @@ import os
 from io import BytesIO
 from datetime import date, timedelta
 from openpyxl.chart import BarChart, LineChart, Reference
-from openpyxl.styles import Alignment, Font, PatternFill
+from openpyxl.styles import Alignment, Border, Font, PatternFill, Side
+from openpyxl.worksheet.table import Table, TableStyleInfo
 
 # ── Configuración de página ─────────────────────────────────
 st.set_page_config(
@@ -438,7 +439,7 @@ def valorar_seguimiento(df_seguimiento):
     return titulo, mensaje, tendencia_txt, media_score, dias_altos, media_sueno, media_fatiga
 
 def generar_excel_seguimiento(df_historial, df_periodo, periodo, resumen):
-    """Crea un Excel con historial, recomendaciones y graficas para descargar."""
+    """Crea un Excel visual con resumen, historial, recomendaciones y graficas."""
     salida = BytesIO()
     historial = df_historial.sort_values("Fecha").copy()
     periodo_df = df_periodo.sort_values("Fecha").copy()
@@ -449,20 +450,6 @@ def generar_excel_seguimiento(df_historial, df_periodo, periodo, resumen):
 
     titulo, mensaje, tendencia_txt, media_score, dias_altos, media_sueno, media_fatiga = resumen
     alertas = generar_alertas_periodo(periodo_df)
-
-    resumen_df = pd.DataFrame([
-        ["Periodo exportado", periodo],
-        ["Registros del periodo", len(periodo_df)],
-        ["Registros totales", len(historial)],
-        ["Riesgo medio", round(media_score, 2)],
-        ["Dias en riesgo alto", dias_altos],
-        ["Sueno medio", round(media_sueno, 2)],
-        ["Fatiga media", round(media_fatiga, 2)],
-        ["Tendencia", tendencia_txt],
-        ["Valoracion", titulo],
-        ["Lectura", mensaje],
-        ["Alertas", " | ".join(alertas) if alertas else "Sin alertas relevantes"],
-    ], columns=["Indicador", "Valor"])
 
     recomendaciones_filas = []
     for _, fila in historial.iterrows():
@@ -481,7 +468,7 @@ def generar_excel_seguimiento(df_historial, df_periodo, periodo, resumen):
     recomendaciones_df = pd.DataFrame(recomendaciones_filas)
 
     with pd.ExcelWriter(salida, engine="openpyxl") as writer:
-        resumen_df.to_excel(writer, index=False, sheet_name="Resumen")
+        pd.DataFrame().to_excel(writer, index=False, sheet_name="Resumen")
         historial.to_excel(writer, index=False, sheet_name="Historial completo")
         periodo_df.to_excel(writer, index=False, sheet_name="Periodo seleccionado")
         recomendaciones_df.to_excel(writer, index=False, sheet_name="Recomendaciones")
@@ -491,18 +478,112 @@ def generar_excel_seguimiento(df_historial, df_periodo, periodo, resumen):
         chart_data.to_excel(writer, index=False, sheet_name="Graficas", startrow=0)
 
         wb = writer.book
-        header_fill = PatternFill("solid", fgColor="D9EAF7")
+        ws_resumen = wb["Resumen"]
+        ws_resumen.sheet_view.showGridLines = False
+        ws_resumen.merge_cells("A1:H1")
+        ws_resumen["A1"] = "Informe de seguimiento de riesgo de lesion"
+        ws_resumen["A1"].font = Font(bold=True, size=18, color="FFFFFF")
+        ws_resumen["A1"].fill = PatternFill("solid", fgColor="1F4E78")
+        ws_resumen["A1"].alignment = Alignment(horizontal="center", vertical="center")
+        ws_resumen.row_dimensions[1].height = 30
+
+        ws_resumen["A3"] = "Periodo"
+        ws_resumen["B3"] = periodo
+        ws_resumen["D3"] = "Valoracion"
+        ws_resumen["E3"] = titulo
+        ws_resumen["A5"] = "Riesgo medio"
+        ws_resumen["B5"] = f"{media_score:.1f}/100"
+        ws_resumen["C5"] = "Dias riesgo alto"
+        ws_resumen["D5"] = dias_altos
+        ws_resumen["E5"] = "Sueno medio"
+        ws_resumen["F5"] = f"{media_sueno:.1f} h"
+        ws_resumen["G5"] = "Fatiga media"
+        ws_resumen["H5"] = f"{media_fatiga:.1f}/10"
+        ws_resumen["A7"] = "Tendencia"
+        ws_resumen["B7"] = tendencia_txt
+        ws_resumen["A9"] = "Lectura"
+        ws_resumen["B9"] = mensaje
+        ws_resumen["A11"] = "Alertas"
+        ws_resumen["B11"] = "\n".join(alertas) if alertas else "Sin alertas relevantes"
+
+        metric_fill = PatternFill("solid", fgColor="EAF4FB")
+        label_fill = PatternFill("solid", fgColor="D9EAF7")
+        thin_gray = Side(style="thin", color="B7C9D6")
+        card_border = Border(left=thin_gray, right=thin_gray, top=thin_gray, bottom=thin_gray)
+        for cell_ref in ["A3", "D3", "A5", "C5", "E5", "G5", "A7", "A9", "A11"]:
+            ws_resumen[cell_ref].font = Font(bold=True, color="1F4E78")
+            ws_resumen[cell_ref].fill = label_fill
+        for row in ws_resumen.iter_rows(min_row=3, max_row=11, min_col=1, max_col=8):
+            for cell in row:
+                cell.border = card_border
+                cell.alignment = Alignment(vertical="top", wrap_text=True)
+        for cell_ref in ["B5", "D5", "F5", "H5"]:
+            ws_resumen[cell_ref].font = Font(bold=True, size=14, color="1F4E78")
+            ws_resumen[cell_ref].fill = metric_fill
+            ws_resumen[cell_ref].alignment = Alignment(horizontal="center", vertical="center")
+        ws_resumen["B9"].alignment = Alignment(wrap_text=True, vertical="top")
+        ws_resumen["B11"].alignment = Alignment(wrap_text=True, vertical="top")
+        ws_resumen.row_dimensions[9].height = 48
+        ws_resumen.row_dimensions[11].height = 48
+
+        header_fill = PatternFill("solid", fgColor="1F4E78")
+        header_font = Font(bold=True, color="FFFFFF")
+        risk_fills = {
+            "BAJO": PatternFill("solid", fgColor="D9EAD3"),
+            "MEDIO": PatternFill("solid", fgColor="FFF2CC"),
+            "ALTO": PatternFill("solid", fgColor="F4CCCC"),
+        }
         for ws in wb.worksheets:
+            if ws.title == "Resumen":
+                continue
+            ws.sheet_view.showGridLines = False
             ws.freeze_panes = "A2"
+            if ws.max_column > 1 and ws.max_row > 1:
+                table_ref = f"A1:{ws.cell(row=ws.max_row, column=ws.max_column).coordinate}"
+                table_name = "Tabla_" + "".join(ch for ch in ws.title if ch.isalnum())
+                table = Table(displayName=table_name[:31], ref=table_ref)
+                style = TableStyleInfo(
+                    name="TableStyleMedium2",
+                    showFirstColumn=False,
+                    showLastColumn=False,
+                    showRowStripes=True,
+                    showColumnStripes=False,
+                )
+                table.tableStyleInfo = style
+                ws.add_table(table)
             for cell in ws[1]:
-                cell.font = Font(bold=True)
+                cell.font = header_font
                 cell.fill = header_fill
-                cell.alignment = Alignment(horizontal="center")
+                cell.alignment = Alignment(horizontal="center", vertical="center", wrap_text=True)
             for column_cells in ws.columns:
                 max_len = max(len(str(cell.value)) if cell.value is not None else 0 for cell in column_cells)
                 ws.column_dimensions[column_cells[0].column_letter].width = min(max(max_len + 2, 12), 55)
+            for row in ws.iter_rows(min_row=2):
+                for cell in row:
+                    cell.alignment = Alignment(vertical="top", wrap_text=True)
+                    if isinstance(cell.value, pd.Timestamp):
+                        cell.number_format = "dd/mm/yyyy"
+
+            nivel_col = None
+            score_col = None
+            for idx, cell in enumerate(ws[1], start=1):
+                if cell.value == "Nivel":
+                    nivel_col = idx
+                if cell.value == "Score":
+                    score_col = idx
+            if nivel_col:
+                for row in range(2, ws.max_row + 1):
+                    nivel = ws.cell(row=row, column=nivel_col).value
+                    fill = risk_fills.get(str(nivel), None)
+                    if fill:
+                        for col in range(1, ws.max_column + 1):
+                            ws.cell(row=row, column=col).fill = fill
+            if score_col:
+                for row in range(2, ws.max_row + 1):
+                    ws.cell(row=row, column=score_col).font = Font(bold=True)
 
         ws_graficas = wb["Graficas"]
+        ws_graficas.sheet_view.showGridLines = False
         if len(chart_data) >= 2:
             max_row = len(chart_data) + 1
 
@@ -543,6 +624,15 @@ def generar_excel_seguimiento(df_historial, df_periodo, periodo, resumen):
             risk_bar.height = 8
             risk_bar.width = 12
             ws_graficas.add_chart(risk_bar, "G38")
+
+        ws_resumen.column_dimensions["A"].width = 22
+        ws_resumen.column_dimensions["B"].width = 38
+        ws_resumen.column_dimensions["C"].width = 18
+        ws_resumen.column_dimensions["D"].width = 18
+        ws_resumen.column_dimensions["E"].width = 18
+        ws_resumen.column_dimensions["F"].width = 18
+        ws_resumen.column_dimensions["G"].width = 18
+        ws_resumen.column_dimensions["H"].width = 18
 
     salida.seek(0)
     return salida.getvalue()
