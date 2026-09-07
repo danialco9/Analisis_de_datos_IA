@@ -26,7 +26,29 @@ El objetivo es ayudar a detectar situaciones de riesgo antes de que aparezca una
 
 La salida principal es un score de riesgo de 0 a 100, una clasificacion bajo/medio/alto, factores de riesgo detectados, recomendaciones personalizadas, posibles lesiones asociadas y efectos negativos a vigilar.
 
-## 2. Problema y oportunidad
+## 2. Dataset y modelo utilizado
+
+Antes de mostrar la aplicacion, es importante explicar de donde salen los datos y como se ha construido el modelo.
+
+El proyecto utiliza el dataset `collegiate_athlete_injury_dataset.csv`, un conjunto de datos de atletas universitarios. Este dataset se ha usado como base para entrenar el sistema de prediccion, no solo como informacion de muestra.
+
+El objetivo era que el modelo aprendiera la relacion entre variables del deportista y la aparicion o no de lesion. La variable que se intenta predecir es `Injury_Indicator`, que indica si el atleta presenta lesion o no.
+
+El dataset contiene 200 registros y 17 columnas originales. Incluye variables como edad, genero, altura, peso, posicion, intensidad de entrenamiento, horas semanales, dias de recuperacion, numero de partidos o eventos, descanso entre eventos, fatiga, rendimiento, contribucion al equipo, equilibrio de carga y score ACL.
+
+El dataset original estaba desbalanceado, porque habia muchos mas casos sin lesion que con lesion. Para evitar que el modelo aprendiera a predecir siempre "sin lesion", se aplico SMOTE, que ayuda a equilibrar las clases durante el entrenamiento.
+
+Tambien se aplico encoding de variables categoricas, normalizacion con `StandardScaler` y division en train, validation y test. Ademas, se incorporaron variables sinteticas de sueno, hidratacion y nutricion para que la demo fuera mas completa y cercana a un caso real de prevencion deportiva.
+
+Se compararon varios modelos: Regresion Logistica, Random Forest, XGBoost y un Ensemble. El modelo activo en la aplicacion es XGBoost.
+
+XGBoost se eligio porque obtuvo muy buen rendimiento, con 96% de accuracy y 0.999 de ROC-AUC, y porque funciona bien con relaciones no lineales entre variables como fatiga, carga, descanso, sueno, hidratacion y score ACL.
+
+En la app, el usuario introduce datos sencillos en el formulario. Esos datos se transforman en las 23 variables que espera el modelo, se aplica el mismo scaler usado durante el entrenamiento y XGBoost calcula una probabilidad de lesion.
+
+Despues, esa probabilidad se combina con factores medico-deportivos para generar un score final de 0 a 100. Por eso la salida no es solo una prediccion tecnica, sino una lectura facil de interpretar: riesgo bajo, medio o alto, factores de riesgo y recomendaciones.
+
+## 3. Problema y oportunidad
 
 Muchos deportistas amateurs entrenan con poca planificacion y sin control objetivo de su carga.
 
@@ -40,7 +62,7 @@ Este sistema intenta aportar una herramienta preventiva:
 - Ayuda a detectar tendencias de fatiga o sobrecarga.
 - Puede apoyar a entrenadores, preparadores fisicos, fisioterapeutas o deportistas.
 
-## 3. Usuario objetivo
+## 4. Usuario objetivo
 
 El usuario principal es un deportista amateur o semiprofesional que entrena varias veces por semana.
 
@@ -53,7 +75,7 @@ Tambien podria usarlo:
 
 La herramienta no sustituye una valoracion medica, pero puede ayudar a decidir cuando conviene reducir carga, descansar o consultar a un profesional.
 
-## 4. Demo funcional
+## 5. Demo funcional
 
 Abrir la aplicacion:
 
@@ -174,7 +196,7 @@ Para acelerar la defensa, usar los botones:
 
 Comparar ambas situaciones para mostrar como cambia el comportamiento del sistema.
 
-## 5. Flujo funcional del sistema
+## 6. Flujo funcional del sistema
 
 El flujo del MVP sigue esta logica:
 
@@ -188,9 +210,11 @@ El flujo del MVP sigue esta logica:
 8. El usuario puede guardar registros diarios o rangos de dias.
 9. El sistema analiza la evolucion semanal/mensual mediante graficas y alertas.
 
-## 6. Datos utilizados
+## 7. Datos utilizados
 
-El proyecto parte de un dataset publico de atletas universitarios.
+El proyecto parte de un dataset publico de atletas universitarios llamado `collegiate_athlete_injury_dataset.csv`.
+
+Este dataset se ha utilizado como base para entrenar el sistema de prediccion. Es decir, no se ha usado solo para mostrar datos en pantalla, sino para que el modelo aprenda la relacion entre distintas variables del deportista y la aparicion o no de una lesion.
 
 Caracteristicas principales:
 
@@ -200,7 +224,11 @@ Caracteristicas principales:
 - Variable objetivo: `Injury_Indicator`.
 - Score continuo: `ACL_Risk_Score`.
 
-El dataset original estaba desbalanceado: habia muchos mas casos sin lesion que con lesion.
+Las variables del dataset recogen informacion del atleta y de su actividad deportiva: edad, genero, altura, peso, posicion, intensidad de entrenamiento, horas semanales, dias de recuperacion, numero de partidos o eventos, descanso entre eventos, fatiga, rendimiento, contribucion al equipo, equilibrio de carga y riesgo ACL.
+
+La variable mas importante para el entrenamiento es `Injury_Indicator`, porque indica si el deportista presenta lesion o no. Esta es la variable objetivo que el modelo intenta predecir.
+
+El dataset original estaba desbalanceado: habia muchos mas casos sin lesion que con lesion. Esto es habitual en problemas de prevencion, porque normalmente hay mas deportistas sanos que lesionados. Si no se corrige, el modelo podria aprender a predecir casi siempre "sin lesion" y dar una falsa sensacion de buen rendimiento.
 
 Para entrenar los modelos se aplico:
 
@@ -211,11 +239,21 @@ Para entrenar los modelos se aplico:
 - Normalizacion con StandardScaler.
 - Division train / validation / test.
 
+El dataset se ha utilizado para tres objetivos principales:
+
+- Entrenar distintos modelos de machine learning.
+- Comparar el rendimiento de esos modelos con metricas objetivas.
+- Construir la aplicacion final para que pueda estimar un score de riesgo a partir de datos introducidos por el usuario.
+
+Ademas, se incorporaron variables sinteticas relacionadas con sueno, hidratacion y nutricion para enriquecer la demo. Estas variables ayudan a que la aplicacion sea mas realista para un contexto deportivo, aunque se explican como una limitacion porque no proceden directamente del dataset original.
+
 El seguimiento diario de la app se guarda en un CSV local generado por la propia aplicacion. Ese historial no forma parte del dataset original de entrenamiento.
 
-## 7. Modelos y resultados
+## 8. Modelos y resultados
 
-Se compararon varios modelos:
+Para resolver el problema se planteo una tarea de clasificacion binaria: estimar si un perfil deportivo tiene mayor o menor riesgo de lesion.
+
+Se compararon varios modelos de machine learning:
 
 | Modelo | Accuracy | ROC-AUC |
 |---|---:|---:|
@@ -226,9 +264,21 @@ Se compararon varios modelos:
 
 El modelo activo de la app es XGBoost.
 
-Se eligio porque ofrece buen rendimiento y se integra bien en la demo.
+XGBoost es un modelo basado en arboles de decision optimizados mediante boosting. En lugar de construir un unico arbol, combina muchos arboles pequenos de forma secuencial. Cada nuevo arbol intenta corregir errores cometidos por los anteriores. Esto permite capturar relaciones no lineales entre variables como fatiga, carga de entrenamiento, descanso, sueno, hidratacion o score ACL.
 
-## 8. Como interpretar la salida
+Se eligio XGBoost porque:
+
+- Ofrece muy buen rendimiento en la comparacion de modelos.
+- Funciona bien con variables numericas y categoricas transformadas.
+- Captura combinaciones de riesgo que no siempre son lineales.
+- Es adecuado para una demo interactiva porque predice rapido.
+- Se integra facilmente en la aplicacion con `joblib`, el `scaler` y las columnas entrenadas.
+
+En la aplicacion, el modelo no trabaja directamente con el formulario tal como lo ve el usuario. Primero se transforman los datos introducidos en las 23 variables que espera el modelo. Despues se aplica el mismo `StandardScaler` usado durante el entrenamiento y finalmente XGBoost calcula una probabilidad de lesion.
+
+Esa probabilidad se combina con factores medico-deportivos para generar un score final de 0 a 100. Por eso la salida de la app es mas comprensible para un usuario no tecnico: no muestra solo una probabilidad, sino un nivel bajo, medio o alto, junto con factores de riesgo y recomendaciones.
+
+## 9. Como interpretar la salida
 
 La salida no debe interpretarse como diagnostico medico.
 
@@ -240,7 +290,7 @@ Debe entenderse como una alerta preventiva:
 
 Las posibles lesiones asociadas indican areas de atencion, no lesiones garantizadas. Los efectos negativos ayudan a entender consecuencias probables de mantener malos habitos de carga, sueno, hidratacion o descanso.
 
-## 9. Valor del producto
+## 10. Valor del producto
 
 El valor principal es convertir datos dispersos en una decision sencilla y accionable.
 
@@ -256,7 +306,7 @@ El usuario no recibe solo un numero, sino:
 
 Esto puede ayudar a prevenir lesiones y mejorar la planificacion del entrenamiento.
 
-## 10. Limitaciones
+## 11. Limitaciones
 
 Limitaciones que hay que explicar con claridad:
 
@@ -268,7 +318,7 @@ Limitaciones que hay que explicar con claridad:
 - El sistema no sustituye a un medico, fisioterapeuta o preparador fisico.
 - Las lesiones asociadas y efectos negativos son orientativos.
 
-## 11. Siguientes pasos
+## 12. Siguientes pasos
 
 Con mas tiempo, el sistema podria evolucionar hacia:
 
@@ -281,7 +331,7 @@ Con mas tiempo, el sistema podria evolucionar hacia:
 - Validacion con profesionales de medicina deportiva.
 - Sistema de alertas automaticas.
 
-## 12. Preguntas probables y respuestas
+## 13. Preguntas probables y respuestas
 
 ### Que problema exacto resuelve?
 
@@ -311,7 +361,7 @@ Permite ver si el riesgo se mantiene estable, mejora o empeora durante una seman
 
 Anadir historico por usuario, calcular ACWR real, mejorar visualizaciones, ampliar dataset y validar recomendaciones con profesionales de medicina deportiva.
 
-## 13. Cierre
+## 14. Cierre
 
 Como conclusion, el proyecto demuestra un MVP funcional capaz de transformar datos deportivos basicos en una prediccion interpretable y en un seguimiento preventivo del riesgo de lesion.
 

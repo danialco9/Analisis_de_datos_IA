@@ -21,21 +21,194 @@ st.set_page_config(
 # ── Estilos ─────────────────────────────────────────────────
 st.markdown("""
 <style>
-    .riesgo-bajo    { background:#d5f5e3; border-left:6px solid #27ae60; padding:16px; border-radius:8px; color:#1a5c35 !important; }
-    .riesgo-medio   { background:#fef9e7; border-left:6px solid #f39c12; padding:16px; border-radius:8px; color:#7d5a00 !important; }
-    .riesgo-alto    { background:#fadbd8; border-left:6px solid #e74c3c; padding:16px; border-radius:8px; color:#7b1c1c !important; }
-    .riesgo-bajo h2, .riesgo-bajo p, .riesgo-bajo strong { color:#1a5c35 !important; }
-    .riesgo-medio h2, .riesgo-medio p, .riesgo-medio strong { color:#7d5a00 !important; }
-    .riesgo-alto h2, .riesgo-alto p, .riesgo-alto strong { color:#7b1c1c !important; }
-    .factor-card    { background:#f0f2f6; border:1px solid #cdd3df; padding:12px; border-radius:8px; margin:4px 0; color:#2c3e50 !important; }
-    .factor-card strong { color:#2c3e50 !important; }
-    .factor-card small  { color:#555 !important; }
-    .recomendacion  { background:#eaf4fb; border-left:4px solid #3498db; padding:12px; border-radius:6px; margin:6px 0; color:#1a3a4a !important; }
-    .metric-card     { background:#ffffff; border:1px solid #d9dee8; padding:14px; border-radius:8px; min-height:92px; }
-    .metric-card small { color:#687385; font-size:13px; }
-    .metric-card h3  { margin:4px 0 0 0; color:#223044; font-size:28px; }
-    .alerta-card     { background:#fff7ed; border-left:4px solid #f97316; padding:12px; border-radius:6px; margin:6px 0; color:#7c2d12; }
-    h1              { color: #2c3e50; }
+    :root {
+        --ink: #edf4f7;
+        --muted: #a7b6c2;
+        --line: #2a3a46;
+        --panel: #111b24;
+        --panel-soft: #17232d;
+        --app-bg: #0b1117;
+        --sidebar-bg: #101820;
+        --accent: #4fa3a5;
+        --accent-soft: #183236;
+        --blue: #6ea8fe;
+        --green: #66d19e;
+        --amber: #f0b45b;
+        --red: #f27b72;
+    }
+    .stApp {
+        background:
+            radial-gradient(circle at top left, rgba(79, 163, 165, 0.16), transparent 34%),
+            linear-gradient(180deg, #0d151c 0%, #0b1117 42%, #0b1117 100%);
+        color: var(--ink);
+    }
+    .main .block-container {
+        max-width: 1220px;
+        padding-top: 2rem;
+        padding-bottom: 3rem;
+    }
+    [data-testid="stSidebar"] {
+        background: var(--sidebar-bg);
+        border-right: 1px solid var(--line);
+    }
+    [data-testid="stSidebar"] [data-testid="stMarkdownContainer"] h2,
+    [data-testid="stSidebar"] [data-testid="stMarkdownContainer"] h3 {
+        color: var(--ink);
+        letter-spacing: 0;
+    }
+    .hero {
+        background: linear-gradient(135deg, #173b46 0%, #215d63 48%, #34485e 100%);
+        border: 1px solid rgba(255,255,255,0.18);
+        border-radius: 8px;
+        padding: 28px 30px;
+        color: #ffffff;
+        box-shadow: 0 18px 42px rgba(23, 32, 51, 0.16);
+        margin-bottom: 18px;
+    }
+    .hero .kicker {
+        color: #b8d8d4;
+        font-size: 13px;
+        font-weight: 700;
+        letter-spacing: 0;
+        margin-bottom: 8px;
+        text-transform: uppercase;
+    }
+    .hero h1 {
+        color: #ffffff !important;
+        font-size: 38px;
+        line-height: 1.12;
+        margin: 0 0 10px 0;
+        letter-spacing: 0;
+    }
+    .hero p {
+        color: #e7eef2;
+        font-size: 16px;
+        max-width: 860px;
+        margin: 0;
+    }
+    .hero-meta {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+        margin-top: 18px;
+    }
+    .hero-meta span {
+        border: 1px solid rgba(255,255,255,0.25);
+        background: rgba(255,255,255,0.10);
+        border-radius: 6px;
+        padding: 7px 10px;
+        color: #ffffff;
+        font-size: 13px;
+    }
+    div[data-testid="stTabs"] button {
+        border-radius: 6px 6px 0 0;
+        font-weight: 650;
+        color: var(--muted);
+    }
+    div[data-testid="stTabs"] button[aria-selected="true"] {
+        color: var(--accent);
+        border-bottom-color: var(--accent);
+    }
+    div[data-baseweb="tab-list"] {
+        border-bottom: 1px solid var(--line);
+    }
+    div[data-testid="stMetric"] {
+        background: var(--panel);
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        padding: 14px 16px;
+        box-shadow: 0 8px 22px rgba(16, 24, 40, 0.05);
+    }
+    div.stButton > button,
+    div.stDownloadButton > button {
+        border-radius: 6px;
+        border: 1px solid #3c5363;
+        font-weight: 650;
+        background: #16232d;
+        color: var(--ink);
+    }
+    div.stButton > button[kind="primary"] {
+        background: var(--accent);
+        border-color: var(--accent);
+    }
+    .stAlert {
+        border-radius: 8px;
+    }
+    [data-baseweb="input"],
+    [data-baseweb="select"] > div,
+    [data-baseweb="textarea"],
+    [data-baseweb="base-input"] {
+        background-color: #0f1922 !important;
+        border-color: #344756 !important;
+        color: var(--ink) !important;
+    }
+    [data-testid="stDateInput"] input,
+    [data-testid="stTextInput"] input {
+        background-color: #0f1922 !important;
+        color: var(--ink) !important;
+        border-color: #344756 !important;
+    }
+    [data-testid="stSlider"] div[role="slider"] {
+        background-color: var(--accent) !important;
+        border-color: var(--accent) !important;
+    }
+    [data-testid="stRadio"] label,
+    [data-testid="stCaptionContainer"],
+    [data-testid="stMarkdownContainer"] p {
+        color: var(--muted);
+    }
+    .section-panel {
+        background: var(--panel);
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        padding: 18px 20px;
+        box-shadow: 0 10px 28px rgba(16, 24, 40, 0.05);
+    }
+    .stat-card {
+        background:var(--panel);
+        border:1px solid var(--line);
+        padding:16px;
+        border-radius:8px;
+        min-height:94px;
+        box-shadow: 0 8px 22px rgba(16, 24, 40, 0.05);
+    }
+    .stat-card small {
+        color:var(--muted);
+        font-size:13px;
+        font-weight:650;
+    }
+    .stat-card h3 {
+        margin:6px 0 0 0;
+        color:var(--ink);
+        font-size:30px;
+        letter-spacing:0;
+    }
+    .stat-card span {
+        color:var(--muted);
+        font-size:12px;
+    }
+    .riesgo-bajo    { background:#10271f; border:1px solid #245b42; border-left:6px solid #66d19e; padding:18px; border-radius:8px; color:#d9f8e8 !important; box-shadow: 0 8px 22px rgba(102, 209, 158, 0.08); }
+    .riesgo-medio   { background:#2d2514; border:1px solid #6b4d1f; border-left:6px solid #f0b45b; padding:18px; border-radius:8px; color:#fff2d9 !important; box-shadow: 0 8px 22px rgba(240, 180, 91, 0.08); }
+    .riesgo-alto    { background:#301b1b; border:1px solid #7d3834; border-left:6px solid #f27b72; padding:18px; border-radius:8px; color:#ffe3df !important; box-shadow: 0 8px 22px rgba(242, 123, 114, 0.10); }
+    .riesgo-bajo h2, .riesgo-bajo p, .riesgo-bajo strong { color:#d9f8e8 !important; }
+    .riesgo-medio h2, .riesgo-medio p, .riesgo-medio strong { color:#fff2d9 !important; }
+    .riesgo-alto h2, .riesgo-alto p, .riesgo-alto strong { color:#ffe3df !important; }
+    .factor-card    { background:var(--panel); border:1px solid var(--line); padding:14px; border-radius:8px; margin:6px 0; color:var(--ink) !important; box-shadow: 0 6px 18px rgba(0, 0, 0, 0.18); }
+    .factor-card strong { color:var(--ink) !important; }
+    .factor-card small  { color:var(--muted) !important; }
+    .recomendacion  { background:#102234; border:1px solid #254d76; border-left:4px solid #6ea8fe; padding:14px; border-radius:8px; margin:7px 0; color:#dbeafe !important; }
+    .metric-card     { background:var(--panel); border:1px solid var(--line); padding:16px; border-radius:8px; min-height:96px; box-shadow: 0 8px 22px rgba(0, 0, 0, 0.18); }
+    .metric-card small { color:var(--muted); font-size:13px; }
+    .metric-card h3  { margin:4px 0 0 0; color:var(--ink); font-size:28px; }
+    .alerta-card     { background:#2d2114; border:1px solid #65441d; border-left:4px solid #f0b45b; padding:14px; border-radius:8px; margin:7px 0; color:#fff2d9; }
+    h1, h2, h3       { color: var(--ink); letter-spacing: 0; }
+    hr               { border-color: var(--line); }
+    p, label, span, div, small { color: inherit; }
+    [data-testid="stDataFrame"] {
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        overflow: hidden;
+    }
 </style>
 """, unsafe_allow_html=True)
 
@@ -178,7 +351,13 @@ def gauge_chart(score, color):
             }
         }
     ))
-    fig.update_layout(height=280, margin=dict(t=40, b=10, l=20, r=20))
+    fig.update_layout(
+        height=300,
+        margin=dict(t=42, b=12, l=18, r=18),
+        paper_bgcolor="rgba(0,0,0,0)",
+        plot_bgcolor="rgba(0,0,0,0)",
+        font=dict(color="#edf4f7", family="Arial"),
+    )
     return fig
 
 def obtener_factores_riesgo(datos_raw, n=3):
@@ -638,9 +817,22 @@ def generar_excel_seguimiento(df_historial, df_periodo, periodo, resumen):
     return salida.getvalue()
 
 # ── INTERFAZ PRINCIPAL ──────────────────────────────────────
-st.title("Sistema de Predicción de Riesgo de Lesión")
-st.caption(f"Modelo activo: **{nombre_modelo}** · Precisión: 96% · ROC-AUC: 0.999 · Variables: 23")
-st.divider()
+st.markdown(f"""
+<div class="hero">
+    <div class="kicker">Sistema preventivo para seguimiento deportivo</div>
+    <h1>Predicción de riesgo de lesión</h1>
+    <p>
+        Panel interactivo para estimar el riesgo individual, registrar la evolución diaria
+        y generar una lectura preventiva basada en carga, recuperación, sueño, fatiga e hidratación.
+    </p>
+    <div class="hero-meta">
+        <span>Modelo activo: {nombre_modelo}</span>
+        <span>Precisión: 96%</span>
+        <span>ROC-AUC: 0.999</span>
+        <span>Variables de entrada: 23</span>
+    </div>
+</div>
+""", unsafe_allow_html=True)
 
 # ── SIDEBAR: Formulario de entrada ─────────────────────────
 with st.sidebar:
@@ -715,19 +907,26 @@ tab_prediccion, tab_registro, tab_seguimiento = st.tabs([
 with tab_prediccion:
     if not predecir:
         col1, col2, col3 = st.columns(3)
-        col1.metric("Modelos entrenados", "4", "LR · RF · XGBoost · Ensemble")
-        col2.metric("Precisión del modelo", "96%", "en conjunto de test")
-        col3.metric("ROC-AUC", "0.999", "prácticamente perfecto")
+        col1.markdown("""<div class="stat-card"><small>Modelos evaluados</small><h3>4</h3><span>Regresión logística, Random Forest, XGBoost y Ensemble</span></div>""", unsafe_allow_html=True)
+        col2.markdown("""<div class="stat-card"><small>Precisión del modelo</small><h3>96%</h3><span>Resultado en conjunto de test</span></div>""", unsafe_allow_html=True)
+        col3.markdown("""<div class="stat-card"><small>Capacidad discriminante</small><h3>0.999</h3><span>ROC-AUC del modelo seleccionado</span></div>""", unsafe_allow_html=True)
 
-        st.info("👈 Introduce los datos del atleta en el panel izquierdo y pulsa **Predecir Riesgo**.")
-
-        st.subheader("¿Cómo funciona?")
+        st.markdown("")
         st.markdown("""
-        1. **Introduce los datos** del atleta en el formulario lateral
-        2. El sistema calcula **23 features** automáticamente
-        3. El modelo ML predice el **score de riesgo (0-100)**
-        4. Recibes una clasificación **BAJO / MEDIO / ALTO** con recomendaciones personalizadas
-        """)
+        <div class="section-panel">
+            <h3 style="margin-top:0">Flujo de uso</h3>
+            <p style="color:#667085; margin-bottom:14px">
+                Ajusta los datos del atleta en el panel lateral y pulsa <strong>Predecir riesgo</strong>.
+                La aplicación transforma esos valores en las variables del modelo y muestra una lectura preventiva.
+            </p>
+            <div class="hero-meta" style="margin-top:0">
+                <span style="color:#edf4f7; background:#17232d; border-color:#2a3a46">Entrada de datos</span>
+                <span style="color:#edf4f7; background:#17232d; border-color:#2a3a46">Cálculo de features</span>
+                <span style="color:#edf4f7; background:#17232d; border-color:#2a3a46">Score 0-100</span>
+                <span style="color:#edf4f7; background:#17232d; border-color:#2a3a46">Recomendaciones</span>
+            </div>
+        </div>
+        """, unsafe_allow_html=True)
 
     else:
         prob, score, nivel, color, css_class, icono = predecir_desde_datos(datos_raw)
@@ -945,25 +1144,37 @@ with tab_seguimiento:
                 y=df_periodo["Score"],
                 mode="lines+markers",
                 name="Score de riesgo",
-                line=dict(color="#e74c3c", width=3),
-                marker=dict(size=8),
+                line=dict(color="#c24135", width=3),
+                marker=dict(size=8, color="#c24135", line=dict(width=1, color="#ffffff")),
             ))
-            fig.add_hrect(y0=0, y1=20, fillcolor="#d5f5e3", opacity=0.35, line_width=0)
-            fig.add_hrect(y0=20, y1=50, fillcolor="#fef9e7", opacity=0.35, line_width=0)
-            fig.add_hrect(y0=50, y1=100, fillcolor="#fadbd8", opacity=0.35, line_width=0)
+            fig.add_hrect(y0=0, y1=20, fillcolor="#10271f", opacity=0.72, line_width=0)
+            fig.add_hrect(y0=20, y1=50, fillcolor="#2d2514", opacity=0.72, line_width=0)
+            fig.add_hrect(y0=50, y1=100, fillcolor="#301b1b", opacity=0.72, line_width=0)
             fig.update_layout(
                 height=360,
-                yaxis=dict(range=[0, 100], title="Score de riesgo"),
-                xaxis=dict(title="Fecha"),
+                yaxis=dict(range=[0, 100], title="Score de riesgo", gridcolor="#22313c"),
+                xaxis=dict(title="Fecha", gridcolor="#18242d"),
                 margin=dict(t=30, b=20, l=20, r=20),
+                paper_bgcolor="rgba(0,0,0,0)",
+                plot_bgcolor="rgba(0,0,0,0)",
+                font=dict(color="#edf4f7"),
             )
             st.plotly_chart(fig, use_container_width=True, key="grafico_score_periodo")
 
             fig_habitos = go.Figure()
-            fig_habitos.add_trace(go.Scatter(x=df_periodo["Fecha"], y=df_periodo["Fatiga"], mode="lines+markers", name="Fatiga"))
-            fig_habitos.add_trace(go.Scatter(x=df_periodo["Fecha"], y=df_periodo["Sueño"], mode="lines+markers", name="Sueño"))
-            fig_habitos.add_trace(go.Scatter(x=df_periodo["Fecha"], y=df_periodo["Hidratación"], mode="lines+markers", name="Hidratación"))
-            fig_habitos.update_layout(height=320, yaxis=dict(title="Valor registrado"), xaxis=dict(title="Fecha"), margin=dict(t=30, b=20, l=20, r=20))
+            fig_habitos.add_trace(go.Scatter(x=df_periodo["Fecha"], y=df_periodo["Fatiga"], mode="lines+markers", name="Fatiga", line=dict(color="#f27b72", width=2.5)))
+            fig_habitos.add_trace(go.Scatter(x=df_periodo["Fecha"], y=df_periodo["Sueño"], mode="lines+markers", name="Sueño", line=dict(color="#6ea8fe", width=2.5)))
+            fig_habitos.add_trace(go.Scatter(x=df_periodo["Fecha"], y=df_periodo["Hidratación"], mode="lines+markers", name="Hidratación", line=dict(color="#66d19e", width=2.5)))
+            fig_habitos.update_layout(
+                height=320,
+                yaxis=dict(title="Valor registrado", gridcolor="#22313c"),
+                xaxis=dict(title="Fecha", gridcolor="#18242d"),
+                margin=dict(t=30, b=20, l=20, r=20),
+                legend=dict(orientation="h", yanchor="bottom", y=1.02, xanchor="right", x=1),
+                paper_bgcolor="rgba(0,0,0,0)",
+                plot_bgcolor="rgba(0,0,0,0)",
+                font=dict(color="#edf4f7"),
+            )
             st.plotly_chart(fig_habitos, use_container_width=True, key="grafico_habitos_periodo")
 
             alertas = generar_alertas_periodo(df_periodo)
