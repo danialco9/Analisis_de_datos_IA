@@ -13,10 +13,10 @@ const CONTACTO = [
   },
   {
     etiqueta: 'LinkedIn',
-    valor: 'danielalconada-díaz',
+    valor: 'daniel-alconada-díaz',
     // La í va percent-encodeada (%C3%AD) para que el enlace funcione igual en
     // cualquier navegador y al copiarlo y pegarlo.
-    href: 'https://www.linkedin.com/in/danielalconada-d%C3%ADaz',
+    href: 'https://www.linkedin.com/in/daniel-alconada-d%C3%ADaz',
   },
   {
     etiqueta: 'GitHub',
