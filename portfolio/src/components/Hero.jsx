@@ -7,6 +7,10 @@ const ROLES = [
   'desarrollador de IA generativa',
 ]
 
+// El rol mas largo marca el alto que hay que reservar (ver el comentario
+// del bloque que lo pinta).
+const ROL_MAS_LARGO = ROLES.reduce((a, b) => (b.length > a.length ? b : a))
+
 /** Efecto máquina de escribir que rota entre los roles. */
 function useTextoRotativo(textos, { velocidad = 65, pausa = 1800 } = {}) {
   const [indice, setIndice] = useState(0)
@@ -80,9 +84,18 @@ export default function Hero() {
           <span className="texto-degradado">decisiones que se entienden</span>
         </h1>
 
-        <p className="mt-6 h-7 font-mono text-base text-mist sm:text-lg">
-          <span className="text-sky-accent">&gt;</span> {rol}
-          <span className="cursor-parpadeo ml-0.5 text-sky-accent">_</span>
+        {/* Los tres roles tienen longitudes distintas y en movil el mas largo
+            ocupa dos lineas. Con una altura fija la segunda quedaba cortada,
+            asi que el alto lo reserva una copia invisible del texto mas largo:
+            nunca se recorta y tampoco da saltos al cambiar de frase. */}
+        <p className="relative mt-6 font-mono text-sm text-mist sm:text-lg">
+          <span className="invisible" aria-hidden="true">
+            &gt; {ROL_MAS_LARGO}_
+          </span>
+          <span className="absolute inset-0">
+            <span className="text-sky-accent">&gt;</span> {rol}
+            <span className="cursor-parpadeo ml-0.5 text-sky-accent">_</span>
+          </span>
         </p>
 
         <p className="mt-6 max-w-2xl text-base leading-relaxed text-mist sm:text-lg">
