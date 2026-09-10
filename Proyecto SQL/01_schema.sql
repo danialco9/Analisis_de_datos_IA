@@ -72,7 +72,14 @@ CREATE TABLE IF NOT EXISTS fact_habitos_diarios (
     training_minutes INTEGER CHECK (training_minutes >= 0),
     sleep_hours REAL CHECK (sleep_hours BETWEEN 0 AND 24),
     meals_count INTEGER CHECK (meals_count BETWEEN 0 AND 10),
+
+    -- Claves foráneas: aseguran que los datos existan en las dimensiones
+    FOREIGN KEY (user_id) REFERENCES dim_usuario(user_id),
+    FOREIGN KEY (date_id) REFERENCES dim_calendario(date_id),
+    FOREIGN KEY (sport_id) REFERENCES dim_deporte(sport_id),
+    FOREIGN KEY (level_id) REFERENCES dim_nivel_entrenamiento(level_id)
 );
+
 -- Dimension suscripcion
 -- Permite analizar ingresos y tipos de clientes del gimnasio
 CREATE TABLE IF NOT EXISTS dim_suscripcion (
@@ -91,14 +98,6 @@ CREATE TABLE IF NOT EXISTS fact_suscripciones (
     fecha_fin DATE,
     activa INTEGER CHECK (activa IN (0,1)),
     FOREIGN KEY (user_id) REFERENCES dim_usuario(user_id),
-    FOREIGN KEY (subscription_id) REFERENCES dim_suscripcion(subscription_id)
-);
-
-    -- Claves foráneas: aseguran que los datos existan en las dimensiones
-    FOREIGN KEY (user_id) REFERENCES dim_usuario(user_id),
-    FOREIGN KEY (date_id) REFERENCES dim_calendario(date_id),
-    FOREIGN KEY (sport_id) REFERENCES dim_deporte(sport_id),
-    FOREIGN KEY (level_id) REFERENCES dim_nivel_entrenamiento(level_id)
     FOREIGN KEY (subscription_id) REFERENCES dim_suscripcion(subscription_id)
 );
 
