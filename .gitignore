@@ -1,8 +1,9 @@
 Proyecto_Deep Learning/trustpilot-reviews-123k.csv
 
-# Codex / archivos locales
+# Instrucciones para asistentes de IA: se quedan en local, no se suben.
 **/.codex-run/
 **/AGENTS.md
+**/CLAUDE.md
 
 # Python cache
 **/__pycache__/

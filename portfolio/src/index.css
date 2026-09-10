@@ -1,0 +1,157 @@
+@import 'tailwindcss';
+
+@theme {
+  --color-ink: #080b11;
+  --color-ink-soft: #0e131c;
+  --color-line: #1e2836;
+  --color-mist: #8ea0b8;
+  --color-sky-accent: #38bdf8;
+  --color-violet-accent: #a78bfa;
+
+  --font-sans: 'Inter', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --font-mono: 'JetBrains Mono', ui-monospace, 'Cascadia Code', 'Consolas', monospace;
+}
+
+@layer base {
+  html {
+    scroll-behavior: smooth;
+    /* Compensa la barra de navegacion fija al saltar a una seccion */
+    scroll-padding-top: 5rem;
+  }
+
+  body {
+    background-color: var(--color-ink);
+    color: #dbe4f0;
+    font-family: var(--font-sans);
+    -webkit-font-smoothing: antialiased;
+  }
+
+  ::selection {
+    background-color: color-mix(in srgb, var(--color-sky-accent) 30%, transparent);
+  }
+
+  /* Barra de scroll discreta, coherente con el tema oscuro */
+  ::-webkit-scrollbar {
+    width: 10px;
+  }
+  ::-webkit-scrollbar-track {
+    background: var(--color-ink);
+  }
+  ::-webkit-scrollbar-thumb {
+    background: var(--color-line);
+    border-radius: 99px;
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    background: #2c3a4d;
+  }
+}
+
+@layer components {
+  .texto-degradado {
+    background-image: linear-gradient(
+      110deg,
+      var(--color-sky-accent),
+      var(--color-violet-accent)
+    );
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+
+  .tarjeta {
+    background-color: color-mix(in srgb, var(--color-ink-soft) 85%, transparent);
+    border: 1px solid var(--color-line);
+    border-radius: 1rem;
+  }
+
+  .etiqueta {
+    display: inline-flex;
+    align-items: center;
+    border-radius: 99px;
+    border: 1px solid var(--color-line);
+    background-color: rgb(255 255 255 / 0.03);
+    padding: 0.2rem 0.7rem;
+    font-size: 0.72rem;
+    letter-spacing: 0.02em;
+    color: var(--color-mist);
+    white-space: nowrap;
+  }
+}
+
+/* ── Animaciones ──────────────────────────────────────────── */
+
+/* Estado inicial de los bloques que aparecen al hacer scroll.
+   La clase .visible la anade el hook useReveal via IntersectionObserver. */
+.revelar {
+  opacity: 0;
+  transform: translateY(24px);
+  transition:
+    opacity 0.7s cubic-bezier(0.16, 1, 0.3, 1),
+    transform 0.7s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.revelar.visible {
+  opacity: 1;
+  transform: none;
+}
+
+@keyframes flotar {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+}
+
+@keyframes latido-cursor {
+  0%,
+  49% {
+    opacity: 1;
+  }
+  50%,
+  100% {
+    opacity: 0;
+  }
+}
+
+@keyframes aparecer-modal {
+  from {
+    opacity: 0;
+    transform: translateY(16px) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+.animar-flotar {
+  animation: flotar 6s ease-in-out infinite;
+}
+
+.cursor-parpadeo {
+  animation: latido-cursor 1s step-end infinite;
+}
+
+.animar-modal {
+  animation: aparecer-modal 0.28s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* Respeta a quien haya pedido menos movimiento en su sistema */
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+  .revelar {
+    opacity: 1;
+    transform: none;
+    transition: none;
+  }
+  .animar-flotar,
+  .cursor-parpadeo,
+  .animar-modal {
+    animation: none;
+  }
+}

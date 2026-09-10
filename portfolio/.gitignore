@@ -1,0 +1,17 @@
+node_modules/
+dist/
+.vite/
+.vercel/
+*.local
+.DS_Store
+
+# La GEMINI_API_KEY nunca se sube: en produccion vive en Vercel
+# y en local en un .env que se queda en tu maquina.
+.env
+.env.*
+!.env.example
+
+.vercel
+
+# Salida temporal de npm run verificar-modelo
+scripts/.bundle.mjs
