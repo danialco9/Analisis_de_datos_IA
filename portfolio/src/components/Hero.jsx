@@ -108,10 +108,8 @@ export default function Hero() {
         </div>
 
         {/* Cifras rápidas */}
-        <dl className="mt-16 grid max-w-2xl grid-cols-2 gap-6 border-t border-line pt-8 sm:grid-cols-4">
+        <dl className="mt-16 grid max-w-md grid-cols-2 gap-6 border-t border-line pt-8">
           {[
-            { valor: '2-3d→1d', etiqueta: 'Procesamiento por cliente' },
-            { valor: '~100', etiqueta: 'Clientes gestionados' },
             { valor: totalProyectos, etiqueta: 'Proyectos publicados' },
             { valor: '2', etiqueta: 'Másteres en datos e IA' },
           ].map((cifra) => (
