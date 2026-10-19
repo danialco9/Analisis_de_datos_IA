@@ -216,7 +216,7 @@ export const PROJECTS = [
     ],
     aprendizajes:
       'Documentar por qué se toma cada decisión de limpieza. Un nulo eliminado sin explicación es una conclusión que nadie puede auditar después.',
-    enlace: `${GH}/proyecto`,
+    enlace: `${GH}/Analisis_de_datos_IA/tree/main/Proyecto`,
   },
   {
     id: 'fundamentos-python',
@@ -232,7 +232,7 @@ export const PROJECTS = [
     ],
     tecnologias: ['Python', 'pandas', 'POO', 'Git'],
     metricas: [{ valor: '10+', etiqueta: 'Ejercicios prácticos' }],
-    enlace: `${GH}/phython`,
+    enlace: `${GH}/Analisis_de_datos_IA/tree/main/phython`,
   },
 ]
 
