@@ -9,6 +9,7 @@ const GH = 'https://github.com/danialco9'
 
 export const CATEGORIES = [
   { id: 'todos', label: 'Todos' },
+  { id: 'web', label: 'Full stack' },
   { id: 'ml', label: 'Machine Learning' },
   { id: 'ia', label: 'IA Generativa' },
   { id: 'dl', label: 'Deep Learning' },
@@ -17,6 +18,55 @@ export const CATEGORIES = [
 ]
 
 export const PROJECTS = [
+  {
+    id: 'gym-tracker',
+    destacado: true,
+    titulo: 'Gym Tracker',
+    subtitulo: 'App full stack para gestionar rutinas de gimnasio',
+    categoria: 'web',
+    periodo: '2026',
+    emoji: '🏋️',
+    resumen:
+      'Aplicación web para gestionar rutinas de gimnasio y crear rutinas adaptadas a cada usuario. Registra cada entreno desde el móvil y analiza el progreso para decir cuándo subir peso, mantenerlo o hacer una descarga.',
+    descripcion: [
+      'Es el proyecto más completo que he hecho de principio a fin: frontend en React con TypeScript, una API en FastAPI, base de datos PostgreSQL y un motor de análisis con pandas y NumPy. Está desplegado (Vercel para la web, Render para la API y Neon para la base de datos) y tiene una cuenta de demo con 12 semanas de entrenos simulados.',
+      'Cada rutina guarda las series objetivo de cada ejercicio (repeticiones, peso y RPE), así que se pueden describir pirámides y rampas tal cual. Al terminar un entreno, la app compara lo que hiciste con lo que tocaba: si completaste todo con RPE 8 o menos sube la carga, si fallaste repeticiones propone mantener y si detecta un estancamiento sugiere una descarga. El salto de peso depende del material (2 kg en mancuernas, 2,5 kg en barra) y cada recomendación explica por qué.',
+      'La pantalla de entreno está pensada para usarla en el gimnasio con el móvil: botones grandes, lo que hiciste la última vez a la vista y temporizador de descanso. Se instala como PWA y funciona sin conexión; si terminas un entreno sin cobertura se queda en cola y se envía solo al volver la red, sin duplicarse. También se puede escribir el entreno en texto libre ("press banca 12,10,8 a 60 rpe 8") y la app lo convierte en series.',
+      'La sesión va en una cookie HttpOnly con JWT, las contraseñas con Argon2 y el login tiene límite de intentos. Hay tests del backend contra un PostgreSQL real, tests end-to-end con Playwright y cuatro workflows de GitHub Actions que lo comprueban todo en cada push.',
+    ],
+    tecnologias: [
+      'React',
+      'TypeScript',
+      'FastAPI',
+      'PostgreSQL',
+      'pandas',
+      'Docker',
+      'GitHub Actions',
+      'Tailwind CSS',
+      'SQLAlchemy',
+      'Playwright',
+    ],
+    metricas: [
+      { valor: '12', etiqueta: 'Semanas de datos en la demo' },
+      { valor: '150+', etiqueta: 'Tests automáticos' },
+      { valor: 'PWA', etiqueta: 'Funciona sin conexión' },
+      { valor: '4', etiqueta: 'Workflows de CI' },
+    ],
+    diagrama: [
+      { nodo: 'React (PWA)', detalle: 'Vercel' },
+      { nodo: 'FastAPI', detalle: 'API REST en Render' },
+      { nodo: 'Análisis', detalle: 'pandas + NumPy' },
+      { nodo: 'PostgreSQL', detalle: 'Neon' },
+    ],
+    imagenes: [
+      { src: 'img/gym_dashboard.jpg', alt: 'Pantalla de inicio de Gym Tracker con el resumen de la semana' },
+      { src: 'img/gym_progreso.jpg', alt: 'Recomendaciones de progreso para la próxima sesión' },
+    ],
+    aprendizajes:
+      'Hacer una app que uso yo mismo en el gimnasio me obligó a pensar en cosas que en un notebook no aparecen: qué pasa si se va la cobertura a mitad de entreno, o cómo explicar una recomendación para que te fíes de ella.',
+    demo: 'https://gym-tracker-two-beta.vercel.app',
+    enlace: `${GH}/gym-tracker`,
+  },
   {
     id: 'tfm-lesiones',
     destacado: true,
@@ -271,7 +321,7 @@ export const EXPERIENCIA = [
 export const FORMACION = [
   {
     titulo: 'Máster en Data Science & IA',
-    centro: 'Evole',
+    centro: 'Evolve',
     periodo: '2025 — 2026',
   },
   {
@@ -310,10 +360,14 @@ export const SKILLS = [
   },
   {
     area: 'Desarrollo web',
-    items: ['Front-end', 'JavaScript', 'React', 'Diseño de interfaces'],
+    items: ['React', 'TypeScript', 'JavaScript', 'FastAPI', 'Tailwind CSS', 'PWA'],
+  },
+  {
+    area: 'Bases de datos y despliegue',
+    items: ['PostgreSQL', 'SQLite', 'Docker', 'GitHub Actions', 'Vercel', 'Render'],
   },
   {
     area: 'Herramientas',
-    items: ['Git', 'GitHub', 'Jupyter', 'VS Code', 'SQLite'],
+    items: ['Git', 'GitHub', 'Jupyter', 'VS Code'],
   },
 ]

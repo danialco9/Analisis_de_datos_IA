@@ -192,14 +192,26 @@ export default function ProjectModal({ proyecto, onCerrar }) {
                 </span>
               ))}
             </div>
-            <a
-              href={proyecto.enlace}
-              target="_blank"
-              rel="noreferrer"
-              className="mt-6 inline-flex items-center gap-2 rounded-xl bg-white px-5 py-3 text-sm font-medium text-ink transition-transform hover:-translate-y-0.5"
-            >
-              Ver código en GitHub ↗
-            </a>
+            <div className="mt-6 flex flex-wrap gap-3">
+              {proyecto.demo && (
+                <a
+                  href={proyecto.demo}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="inline-flex items-center gap-2 rounded-xl bg-sky-accent px-5 py-3 text-sm font-medium text-ink transition-transform hover:-translate-y-0.5"
+                >
+                  Probar la demo ↗
+                </a>
+              )}
+              <a
+                href={proyecto.enlace}
+                target="_blank"
+                rel="noreferrer"
+                className="inline-flex items-center gap-2 rounded-xl bg-white px-5 py-3 text-sm font-medium text-ink transition-transform hover:-translate-y-0.5"
+              >
+                Ver código en GitHub ↗
+              </a>
+            </div>
           </div>
         </div>
       </div>
