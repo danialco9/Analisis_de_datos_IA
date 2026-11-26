@@ -288,20 +288,22 @@ export const PROJECTS = [
 
 export const EXPERIENCIA = [
   {
-    puesto: 'Analista de Datos Fiscal',
+    puesto: 'Analista de Datos',
     empresa: 'Four Stack',
     periodo: 'mar. 2026 — jul. 2026',
     actual: false,
     logros: [
-      'Automaticé y reestructuré procesos operativos de atención al cliente con Python y JavaScript, gestionando individualmente unos 100 clientes.',
-      'Integré datos tributarios de múltiples fuentes (CSV, Excel y APIs de clientes) para reconstruir operativas de forma estructurada.',
-      'Diseñé y adapté modelos y procesos en Python para la clasificación y detección de riesgos fiscales, iterando caso a caso junto al equipo.',
+      'Analicé con el equipo fiscal sus procesos para detectar las tareas manuales y repetitivas, y las automaticé con Python y JavaScript.',
+      'Desarrollé procesos ETL que integraban APIs de clientes y fuentes CSV y Excel: extracción, normalización, validación y estructuración.',
+      'Integré las APIs de OpenAI y Claude en las herramientas internas del equipo.',
+      'Desarrollé en Python modelos de clasificación de operaciones y detección de riesgos fiscales, validados caso a caso con el equipo.',
+      'Gestioné de forma autónoma los datos sensibles de unos 100 clientes y documenté los flujos para que el equipo pudiera mantenerlos.',
     ],
     impacto: {
       valor: '2-3 días → 1 día',
       etiqueta: 'Tiempo de procesamiento por cliente',
     },
-    tecnologias: ['Python', 'JavaScript', 'Excel', 'APIs', 'Automatización'],
+    tecnologias: ['Python', 'Pandas', 'SQL', 'JavaScript', 'API de OpenAI', 'API de Claude', 'Excel'],
   },
   {
     puesto: 'Programador Web',
@@ -309,12 +311,12 @@ export const EXPERIENCIA = [
     periodo: 'mar. 2025 — jun. 2025',
     actual: false,
     logros: [
-      'Desarrollo front-end principal, optimizando la interfaz de usuario para mejorar la experiencia del cliente.',
-      'Gestión de ramas de GitHub, asegurando un flujo de trabajo eficiente y colaborativo.',
-      'Resolución de errores, aumentando la estabilidad y el rendimiento del software.',
-      'Diseño de páginas web, garantizando atractivo visual y funcionalidad.',
+      'Desarrollé el front-end principal de la plataforma de una empresa educativa con React y Tailwind CSS, con componentes reutilizables.',
+      'Implementé el diseño responsive para móvil, tablet y escritorio.',
+      'Integré APIs REST para conectar el front-end con los servicios backend en Node.js.',
+      'Trabajé en equipo con Git y GitHub: ramas, pull requests y revisiones de código.',
     ],
-    tecnologias: ['JavaScript', 'Front-end', 'Git', 'GitHub', 'Diseño web'],
+    tecnologias: ['React', 'JavaScript', 'Tailwind CSS', 'Node.js', 'APIs REST', 'Git'],
   },
 ]
 
@@ -333,6 +335,11 @@ export const FORMACION = [
     titulo: 'Grado Superior en Desarrollo de Aplicaciones Web',
     centro: 'Medac',
     periodo: '2023 — 2025',
+  },
+  {
+    titulo: 'Grado Medio en Sistemas Microinformáticos y Redes',
+    centro: 'Cesur',
+    periodo: '2021 — 2023',
   },
 ]
 

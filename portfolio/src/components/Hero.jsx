@@ -3,7 +3,7 @@ import { PROJECTS } from '../data/projects'
 
 const ROLES = [
   'analista de datos',
-  'ingeniero de machine learning',
+  'desarrollador Python',
   'desarrollador de IA generativa',
 ]
 
@@ -75,7 +75,7 @@ export default function Hero() {
             <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-sky-accent opacity-70" />
             <span className="relative inline-flex h-1.5 w-1.5 rounded-full bg-sky-accent" />
           </span>
-          Data Analyst · Máster en Data Science e IA
+          Desarrollador Python · Datos e IA
         </p>
 
         <h1 className="max-w-4xl text-4xl leading-[1.05] font-semibold tracking-tight text-white sm:text-6xl lg:text-7xl">
@@ -111,6 +111,13 @@ export default function Hero() {
           >
             Ver proyectos
             <span className="transition-transform group-hover:translate-y-0.5">↓</span>
+          </a>
+          <a
+            href="/Daniel_Alconada_CV.pdf"
+            download
+            className="inline-flex items-center gap-2 rounded-xl border border-sky-accent/40 px-5 py-3 text-sm text-white transition-colors hover:border-sky-accent hover:bg-sky-accent/10"
+          >
+            Descargar CV
           </a>
           <a
             href="#contacto"
